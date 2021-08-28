@@ -1,0 +1,26 @@
+server:
+  port: 8001
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    #MySQL≈‰÷√
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://8.141.56.170:3306/exam?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root
+    password: root
+  redis:
+    port: 6379
+    host: 8.141.56.170
+    password:
+#mybatis-plus ≈‰÷√
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+
+
+
+logging:
+      level:
+        com.kkb.cubemall: debug
+    # client_secret: d4660fb2c048b91b19bea755f79ca1e1e088b175

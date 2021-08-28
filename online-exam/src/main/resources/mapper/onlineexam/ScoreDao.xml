@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lzz.onlineexam.dao.ScoreDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.lzz.onlineexam.entity.ScoreEntity" id="scoreMap">
+        <result property="scoreid" column="scoreId"/>
+        <result property="examcode" column="examCode"/>
+        <result property="studentid" column="studentId"/>
+        <result property="subject" column="subject"/>
+        <result property="score" column="score"/>
+        <result property="answerdate" column="answerDate"/>
+    </resultMap>
+
+
+</mapper>

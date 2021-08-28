@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lzz.onlineexam.dao.StudentAnswerDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.lzz.onlineexam.entity.StudentAnswerEntity" id="studentAnswerMap">
+        <result property="id" column="id"/>
+        <result property="studentid" column="studentId"/>
+        <result property="classesid" column="classesId"/>
+        <result property="paperid" column="paperId"/>
+        <result property="questionType" column="questionType"/>
+        <result property="questionid" column="questionId"/>
+        <result property="userAnswer" column="user_answer"/>
+        <result property="rightAnswer" column="right_answer"/>
+        <result property="userScore" column="user_score"/>
+        <result property="questionStatus" column="question_status"/>
+    </resultMap>
+
+
+</mapper>
