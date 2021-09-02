@@ -15,6 +15,7 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.lzz.onlineexam.entity.MessageEntity;
@@ -46,6 +47,7 @@ public class MessageController {
      */
     @GetMapping("/list/{page}/{size}")
     // @RequiresPermissions("onlineexam:exammanage:list")
+    @PreAuthorize("hasAuthority('message')")
     public R list(@PathVariable Integer page, @PathVariable Integer size ) {
 
         return R.ok().put("list", messageService.messagesInfo(page,size));
@@ -58,6 +60,7 @@ public class MessageController {
      */
     @GetMapping("/info/{id}")
    // @RequiresPermissions("onlineexam:message:info")
+    @PreAuthorize("hasAnyAuthority('message,student')")
     public R info(@PathVariable("id") Integer id){
 		MessageEntity message = messageService.getById(id);
 
@@ -69,6 +72,7 @@ public class MessageController {
      */
     @PostMapping("/save")
   //  @RequiresPermissions("onlineexam:message:save")
+    @PreAuthorize("hasAnyAuthority('message,student')")
     public R save(@RequestBody MessageEntity message) throws RRException {
         if (message.getTitle() != null && message.getContent() != null){
             messageService.save(message);
@@ -83,6 +87,7 @@ public class MessageController {
      */
     @PostMapping("/update")
    // @RequiresPermissions("onlineexam:message:update")
+    @PreAuthorize("hasAnyAuthority('message,student')")
     public R update(@RequestBody MessageEntity message){
 		messageService.updateById(message);
 
@@ -94,6 +99,7 @@ public class MessageController {
      */
     @DeleteMapping("/delete")
    // @RequiresPermissions("onlineexam:message:delete")
+    @PreAuthorize("hasAnyAuthority('message,student')")
     public R delete(@RequestBody Integer[] ids){
 		messageService.removeByIds(Arrays.asList(ids));
 

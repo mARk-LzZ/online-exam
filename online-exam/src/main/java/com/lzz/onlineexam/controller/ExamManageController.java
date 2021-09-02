@@ -28,7 +28,6 @@ import com.lzz.onlineexam.common.utils.R;
 @RestController
 @RequestMapping("onlineexam/exammanage")
 @Api(tags={"考试控制器"})
-@PreAuthorize("hasAnyAuthority('admin,teacher')")
 public class ExamManageController {
     @Autowired
     private ExamManageService examManageService;
@@ -41,6 +40,7 @@ public class ExamManageController {
      */
     @GetMapping("/list/{page}")
     // @RequiresPermissions("onlineexam:exammanage:list")
+    @PreAuthorize("hasAnyAuthority('examManage,student')")
     public R list(@PathVariable Integer page ) {
 
         return R.ok().put("list", examManageService.examsInfo(page));
@@ -53,6 +53,7 @@ public class ExamManageController {
      */
     @GetMapping("/info/{examcode}")
    // @RequiresPermissions("onlineexam:exammanage:info")
+    @PreAuthorize("hasAnyAuthority('examManage,student')")
     public R info(@PathVariable("examcode") Integer examcode){
 		ExamManageEntity examManage = examManageService.getById(examcode);
 
@@ -64,6 +65,7 @@ public class ExamManageController {
      */
     @PostMapping("/save")
   //  @RequiresPermissions("onlineexam:exammanage:save")
+    @PreAuthorize("hasAuthority('examManage')")
     public R save(@RequestBody ExamManageEntity examManage) throws RRException {
         if (examManage.getSource()!=null &&
                 examManage.getDescription()!=null &&
@@ -87,7 +89,7 @@ public class ExamManageController {
      * 修改
      */
     @PutMapping("/update")
-   // @RequiresPermissions("onlineexam:exammanage:update")
+    @PreAuthorize("hasAuthority('examManage')")
     public R update(@RequestBody ExamManageEntity examManage){
 		examManageService.updateById(examManage);
 
@@ -98,7 +100,8 @@ public class ExamManageController {
      * 删除
      */
     @DeleteMapping("/delete")
-   // @RequiresPermissions("onlineexam:exammanage:delete")
+    @PreAuthorize("hasAuthority('examManage')")
+    // @RequiresPermissions("onlineexam:exammanage:delete")
     public R delete(@RequestBody Integer[] examcodes){
 		examManageService.removeByIds(Arrays.asList(examcodes));
 

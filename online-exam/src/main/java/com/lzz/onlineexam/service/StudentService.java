@@ -25,7 +25,7 @@ public interface StudentService extends IService<StudentEntity> {
     R register(StudentEntity studentEntity);
 
     //个人信息
-    String studentInfo(String token , String studentName);
+    String myInfo(String token , String studentName);
 
     //我的试卷
     Page<ScoreEntity> myExamRecord(String studentId , Integer page , Integer size);

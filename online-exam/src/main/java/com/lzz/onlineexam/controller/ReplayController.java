@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.lzz.onlineexam.common.exception.RRException;
 import io.swagger.annotations.Api;
 import org.elasticsearch.action.bulk.BulkRequest;
@@ -15,6 +16,7 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.lzz.onlineexam.entity.ReplayEntity;
@@ -46,6 +48,7 @@ public class ReplayController {
      */
     @GetMapping("/list/{page}/{size}")
     // @RequiresPermissions("onlineexam:exammanage:list")
+    @PreAuthorize("hasAuthority('paperManage')")
     public R list(@PathVariable Integer page, @PathVariable Integer size ) {
 
         return R.ok().put("list", replayService.replaysInfo(page,size));
@@ -54,14 +57,14 @@ public class ReplayController {
 
 
     /**
-     * 信息
+     * 信息 根据留言查找所有回复
      */
-    @GetMapping("/info/{replayid}")
+    @GetMapping("/info/{messageid}")
    // @RequiresPermissions("onlineexam:replay:info")
-    public R info(@PathVariable("replayid") Integer replayid){
-		ReplayEntity replay = replayService.getById(replayid);
-
-        return R.ok().put("replay", replay);
+    @PreAuthorize("hasAnyAuthority('replay,studnet')")
+    public R info(@PathVariable("messageid") Integer messageid){
+        List<ReplayEntity> replays = replayService.list(new QueryWrapper<ReplayEntity>().eq("messageId" , messageid));
+        return R.ok().put("replay", replays);
     }
 
     /**
@@ -69,6 +72,7 @@ public class ReplayController {
      */
     @PostMapping("/save")
   //  @RequiresPermissions("onlineexam:replay:save")
+    @PreAuthorize("hasAnyAuthority('replay,studnet')")
     public R save(@RequestBody ReplayEntity replay) throws RRException {
         if (replay.getMessageid() != 0.0 && replay.getReplay() != null && replay.getReplayid()!= 0.0){
             replayService.save(replay);
@@ -83,6 +87,7 @@ public class ReplayController {
      */
     @PostMapping("/update")
    // @RequiresPermissions("onlineexam:replay:update")
+    @PreAuthorize("hasAnyAuthority('replay,studnet')")
     public R update(@RequestBody ReplayEntity replay){
 		replayService.updateById(replay);
 
@@ -94,6 +99,7 @@ public class ReplayController {
      */
     @DeleteMapping("/delete")
    // @RequiresPermissions("onlineexam:replay:delete")
+    @PreAuthorize("hasAnyAuthority('replay,studnet')")
     public R delete(@RequestBody Integer[] replayids){
 		replayService.removeByIds(Arrays.asList(replayids));
 

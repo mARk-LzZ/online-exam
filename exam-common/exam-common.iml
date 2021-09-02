@@ -78,9 +78,6 @@
     <orderEntry type="library" name="Maven: com.github.jsqlparser:jsqlparser:4.0" level="project" />
     <orderEntry type="library" name="Maven: org.mybatis:mybatis:3.5.7" level="project" />
     <orderEntry type="library" name="Maven: org.mybatis:mybatis-spring:2.0.6" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-jdbc:2.4.5" level="project" />
-    <orderEntry type="library" name="Maven: com.zaxxer:HikariCP:3.4.5" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-jdbc:5.3.6" level="project" />
     <orderEntry type="library" name="Maven: org.projectlombok:lombok:1.18.20" level="project" />
     <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpcore:4.4.14" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.12.0" level="project" />
@@ -166,5 +163,8 @@
     <orderEntry type="library" name="Maven: org.springframework.security:spring-security-core:5.2.1.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.security:spring-security-web:5.2.1.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-expression:5.2.1.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-jdbc:2.2.4.RELEASE" level="project" />
+    <orderEntry type="library" name="Maven: com.zaxxer:HikariCP:3.4.2" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-jdbc:5.2.3.RELEASE" level="project" />
   </component>
 </module>

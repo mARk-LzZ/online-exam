@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.lzz.onlineexam.entity.StudentAnswerEntity;
@@ -36,6 +37,7 @@ public class StudentAnswerController {
      * 列表
      */
     @GetMapping("/list/{page}/{size}")
+    @PreAuthorize("hasAuthority('studentAnswer')")
     // @RequiresPermissions("onlineexam:exammanage:list")
     public R list(@PathVariable Integer page, @PathVariable Integer size ) {
 
@@ -49,6 +51,7 @@ public class StudentAnswerController {
      */
     @GetMapping("/info/{id}")
    // @RequiresPermissions("onlineexam:studentanswer:info")
+    @PreAuthorize("hasAuthority('studentAnswer')")
     public R info(@PathVariable("id") Integer id){
 		StudentAnswerEntity studentAnswer = studentAnswerService.getById(id);
 
@@ -61,6 +64,7 @@ public class StudentAnswerController {
      */
     @PostMapping("/update")
    // @RequiresPermissions("onlineexam:studentanswer:update")
+    @PreAuthorize("hasAuthority('studentAnswer')")
     public R update(@RequestBody StudentAnswerEntity studentAnswer){
 		studentAnswerService.updateById(studentAnswer);
 
@@ -72,6 +76,7 @@ public class StudentAnswerController {
      */
     @DeleteMapping("/delete")
    // @RequiresPermissions("onlineexam:studentanswer:delete")
+    @PreAuthorize("hasAuthority('studentAnswer')")
     public R delete(@RequestBody Integer[] ids){
 		studentAnswerService.removeByIds(Arrays.asList(ids));
 
@@ -100,27 +105,37 @@ public class StudentAnswerController {
 
     @GetMapping("/getpaper")
     @ApiOperation("做完查看试卷")
+    @PreAuthorize("hasAnyAuthority('studentAnswer,student')")
     public R getPaper(){
         return R.ok().put("paper" , studentAnswerService.getPaper());
     }
 
     @PostMapping("/handjudge")
     @ApiOperation("手改填空和主观(先请求教师查看未批改试卷)")
+    @PreAuthorize("hasAuthority('studentAnswer')")
     public R handJudge(List<Double> scores){
-        studentAnswerService.handJudge(scores);
-        return R.ok();
+        R r=studentAnswerService.handJudge(scores);
+        if (r.equals(R.ok())){
+            return R.ok();
+        }
+        throw  new RRException("无法手改");
     }
 
     @PostMapping("/autojudge")
     @ApiOperation("自动改选择和判断（先请求教师查看未批改试卷）")
+    @PreAuthorize("hasAuthority('studentAnswer')")
     public R autoJudge(){
-        studentAnswerService.autoJudge();
-        return R.ok();
+        R r=studentAnswerService.autoJudge();
+        if (r.equals(R.ok())){
+            return R.ok();
+        }
+        throw new RRException("自动改卷失败");
     }
 
     @PostMapping("questioncorrected")
     @ApiOperation("学生查看已批改试卷")
     @ApiImplicitParams({@ApiImplicitParam(name="studentid" , value="学生id（非账号）") , @ApiImplicitParam(name="paperid" , value="试卷id")})
+    @PreAuthorize("hasAuthority('studentAnswer,student')")
     public R questionsCorrected(@ApiIgnore @RequestBody StudentAnswerEntity studentAnswerEntity){
         Double studentId = studentAnswerEntity.getStudentid();
         Double paperId = studentAnswerEntity.getPaperid();
@@ -129,6 +144,7 @@ public class StudentAnswerController {
 
     @PostMapping("questionswaitingcorrect")
     @ApiOperation("教师查看未批改试卷")
+    @PreAuthorize("hasAuthority('studentAnswer')")
     @ApiImplicitParams({@ApiImplicitParam(name="studentid" , value="学生id（非账号）") , @ApiImplicitParam(name="paperid" , value="试卷id")})
     public R questionsWaitingCorrect(@ApiIgnore @RequestBody StudentAnswerEntity studentAnswerEntity){
         Double studentId = studentAnswerEntity.getStudentid();
@@ -139,6 +155,7 @@ public class StudentAnswerController {
     @PostMapping("allwaitingcorrect")
     @ApiOperation("教师查看所有未批改试题")
     @ApiImplicitParams({@ApiImplicitParam(name="paperid" , value="试卷id")})
+    @PreAuthorize("hasAuthority('studentAnswer')")
     public R allWaitingCorrect(@ApiIgnore @RequestBody StudentAnswerEntity studentAnswerEntity){
         Double paperId = studentAnswerEntity.getPaperid();
         return R.ok().put("paper" , studentAnswerService.allWaitingCorrect(paperId));

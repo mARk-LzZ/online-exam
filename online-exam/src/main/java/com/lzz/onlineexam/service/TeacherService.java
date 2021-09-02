@@ -26,12 +26,16 @@ public interface TeacherService extends IService<TeacherEntity> {
     * */
     R register(TeacherEntity teacherEntity);
 
-    //个人信息
+    //个人信息(管理员)
     String teacherInfo(String token , String teacherName);
 
     //查看所有学生
     IPage<StudentEntity> studentsInfo(Integer page , Integer size);
 
+    //所有教师信息
     IPage<TeacherEntity> teachersInfo(Integer page, Integer size);
+
+    //登陆后查看自己信息
+    String myInfo(String token , String teacherName);
 }
 

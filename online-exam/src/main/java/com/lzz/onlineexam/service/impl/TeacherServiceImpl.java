@@ -119,5 +119,15 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherDao, TeacherEntity> i
         return this.page(new Page<>(page,size));
     }
 
+    @Override
+    public String myInfo(String token , String teacherName) {
+        //根据token从redis服务中查询用户身份信息
+        String userInfo = redisTemplate.opsForValue().get(Constant.REDIS_LOGIN_KEY+ token);
+        if (StringUtils.isBlank(userInfo)){
+            return null;
+        }
+        TeacherEntity teacherEntity = this.getOne(new QueryWrapper<TeacherEntity>().eq("teacherName" ,teacherName));
+        return teacherEntity.toString();
+    }
 
 }

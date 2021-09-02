@@ -12,6 +12,7 @@ import com.lzz.onlineexam.entity.MultiQuestionEntity;
 import com.lzz.onlineexam.entity.SubjectiveQuestionEntity;
 import com.lzz.onlineexam.service.SubjectiveQuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -33,6 +34,7 @@ public class SubjectiveQuestionController {
      */
     @GetMapping("/list/{page}/{size}")
     // @RequiresPermissions("onlineexam:exammanage:list")
+    @PreAuthorize("hasAnyAuthority('subjectiveQuestion,student')")
     public R list(@PathVariable Integer page, @PathVariable Integer size ) {
 
         return R.ok().put("list", subjectiveQuestionService.subjectiveQuestionsInfo(page,size));
@@ -45,6 +47,7 @@ public class SubjectiveQuestionController {
      */
     @RequestMapping("/info/{questionid}")
    // @RequiresPermissions("onlineexam:subjectivequestion:info")
+    @PreAuthorize("hasAnyAuthority('subjectiveQuestion,student')")
     public R info(@PathVariable("questionid") String questionid){
 		SubjectiveQuestionEntity subjectiveQuestion = subjectiveQuestionService.getById(questionid);
 
@@ -56,6 +59,7 @@ public class SubjectiveQuestionController {
      */
     @PostMapping("/save")
     //  @RequiresPermissions("onlineexam:fillquestion:save")
+    @PreAuthorize("hasAuthority('subjectiveQuestion')")
     public R save(@RequestBody SubjectiveQuestionEntity subjectiveQuestionEntity) throws RRException {
         if (subjectiveQuestionEntity.getQuestion()!=null &&
                 subjectiveQuestionEntity.getAnswer()!= null &&
@@ -77,7 +81,8 @@ public class SubjectiveQuestionController {
      * 修改
      */
     @RequestMapping("/update")
-   // @RequiresPermissions("onlineexam:subjectivequestion:update")
+    @PreAuthorize("hasAuthority('subjectiveQuestion')")
+    // @RequiresPermissions("onlineexam:subjectivequestion:update")
     public R update(@RequestBody SubjectiveQuestionEntity subjectiveQuestion){
 		subjectiveQuestionService.updateById(subjectiveQuestion);
 
@@ -88,7 +93,8 @@ public class SubjectiveQuestionController {
      * 删除
      */
     @RequestMapping("/delete")
-   // @RequiresPermissions("onlineexam:subjectivequestion:delete")
+    @PreAuthorize("hasAuthority('subjectiveQuestion')")
+    // @RequiresPermissions("onlineexam:subjectivequestion:delete")
     public R delete(@RequestBody String[] questionids){
 		subjectiveQuestionService.removeByIds(Arrays.asList(questionids));
 

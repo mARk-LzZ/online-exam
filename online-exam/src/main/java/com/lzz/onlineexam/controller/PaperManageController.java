@@ -24,6 +24,7 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.lzz.onlineexam.entity.PaperManageEntity;
@@ -64,6 +65,7 @@ public class PaperManageController {
      */
     @GetMapping("/list/{page}/{size}")
     // @RequiresPermissions("onlineexam:exammanage:list")
+    @PreAuthorize("hasAnyAuthority('paperManage,student')")
     public R list(@PathVariable Integer page, @PathVariable Integer size ) {
 
         return R.ok().put("list", paperManageService.papersInfo(page,size));
@@ -77,6 +79,7 @@ public class PaperManageController {
     @PostMapping("/save")
     @ApiOperation("出卷")
   //  @RequiresPermissions("onlineexam:papermanage:save")
+    @PreAuthorize("hasAuthority('paperManage')")
     public R save(@RequestBody PaperManageEntity paperManage){
         if (paperManage.getQuestiontype() == null){
             throw new RRException("请指定题目类型" , 900);
@@ -95,6 +98,7 @@ public class PaperManageController {
      */
     @PostMapping("/update")
    // @RequiresPermissions("onlineexam:papermanage:update")
+    @PreAuthorize("hasAuthority('paperManage')")
     public R update(@RequestBody PaperManageEntity paperManage){
 		paperManageService.updateById(paperManage);
 
@@ -106,6 +110,7 @@ public class PaperManageController {
      */
     @DeleteMapping("/delete")
    // @RequiresPermissions("onlineexam:papermanage:delete")
+    @PreAuthorize("hasAuthority('paperManage')")
     public R delete(@RequestBody Integer[] paperids){
 		paperManageService.removeByIds(Arrays.asList(paperids));
 
@@ -119,6 +124,7 @@ public class PaperManageController {
     @ApiOperation("查看试卷")
     @PostMapping("/paperselect")
     @ApiImplicitParam(name="paperid" , value="试卷id")
+    @PreAuthorize("hasAnyAuthority('paperManage,student')")
     public R paperSelect(@ApiIgnore @RequestBody PaperManageEntity paperManageEntity) {
         Map<String, List<Object>> map=paperManageService.paperSelect(paperManageEntity.getPaperid());
         if (!map.isEmpty()){

@@ -16,6 +16,7 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -68,6 +69,7 @@ public class LoginController {
      * 列表 并将数据同步到es中
      */
     @GetMapping("/list/{page}/{size}")
+    @PreAuthorize("hasAuthority('login')")
     // @RequiresPermissions("onlineexam:exammanage:list")
     public R list(@PathVariable Integer page, @PathVariable Integer size ) {
 
@@ -81,6 +83,7 @@ public class LoginController {
      */
     @GetMapping("/info/{loginid}")
     // @RequiresPermissions("onlineexam:login:info")
+    @PreAuthorize("hasAuthority('login')")
     public R info(@PathVariable("loginid") String loginid) {
         LoginEntity login=loginService.getById(loginid);
 
@@ -94,6 +97,7 @@ public class LoginController {
      */
     @PostMapping("/update")
     // @RequiresPermissions("onlineexam:login:update")
+    @PreAuthorize("hasAuthority('login')")
     public R update(@RequestBody LoginEntity login) {
         loginService.updateById(login);
 
@@ -105,6 +109,7 @@ public class LoginController {
      */
     @DeleteMapping("/delete")
     // @RequiresPermissions("onlineexam:login:delete")
+    @PreAuthorize("hasAuthority('login')")
     public R delete(@RequestBody String[] loginids) {
         loginService.removeByIds(Arrays.asList(loginids));
 

@@ -96,7 +96,7 @@ public class StudentServiceImpl extends ServiceImpl<StudentDao, StudentEntity> i
     }
 
     @Override
-    public String studentInfo(String token , String studentName) {
+    public String myInfo(String token , String studentName) {
         //根据token从redis服务中查询用户身份信息
         String userInfo = redisTemplate.opsForValue().get(Constant.REDIS_LOGIN_KEY+ token);
         if (StringUtils.isBlank(userInfo)){

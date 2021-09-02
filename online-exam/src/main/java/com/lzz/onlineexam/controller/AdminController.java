@@ -41,30 +41,7 @@ public class AdminController {
     private RestHighLevelClient restHighLevelClient;
 
 
-//    @GetMapping("/list")
-//    @ApiOperation("查看所有管理员")
-//    // @RequiresPermissions("onlineexam:exammanage:list")
-//    public R list(@RequestParam Map<String, Object> params) throws IOException {
-//        List<?> adminEntities = adminService.queryPage(params).getList();
-//
-//        BulkRequest bulkRequest = new BulkRequest();
-//        bulkRequest.timeout("20ms");
-//
-//        for (int i=0; i < adminEntities.size(); i++) {
-//            bulkRequest.add(
-//                    new IndexRequest("admin")
-//                    .source(JSON.toJSONString(adminEntities.get(i)) , XContentType.JSON)
-//            );
-//        }
-//
-//        BulkResponse bulkResponse = restHighLevelClient.bulk(bulkRequest , RequestOptions.DEFAULT);
-//        return R.ok().put("list", adminEntities);
-//
-//    }
-
-
     @GetMapping("/list/{page}/{size}")
-    // @RequiresPermissions("onlineexam:exammanage:list")
     public R list(@PathVariable Integer page, @PathVariable Integer size ) {
 
         return R.ok().put("list", adminService.adminsInfo(page,size));

@@ -18,6 +18,7 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.lzz.onlineexam.entity.MultiQuestionEntity;
@@ -49,6 +50,7 @@ public class MultiQuestionController {
      */
     @GetMapping("/list/{page}/{size}")
     // @RequiresPermissions("onlineexam:exammanage:list")
+    @PreAuthorize("hasAnyAuthority('multiQuestion,student')")
     public R list(@PathVariable Integer page, @PathVariable Integer size ) {
 
         return R.ok().put("list", multiQuestionService.multiQuestionsInfo(page,size));
@@ -61,6 +63,7 @@ public class MultiQuestionController {
      */
     @GetMapping("/info/{questionid}")
    // @RequiresPermissions("onlineexam:multiquestion:info")
+    @PreAuthorize("hasAnyAuthority('multiQuestion,student')")
     public R info(@PathVariable("questionid") Integer questionid){
 		MultiQuestionEntity multiQuestion = multiQuestionService.getById(questionid);
 
@@ -72,6 +75,7 @@ public class MultiQuestionController {
      */
     @PostMapping("/save")
     //  @RequiresPermissions("onlineexam:fillquestion:save")
+    @PreAuthorize("hasAuthority('multiQuestion')")
     public R save(@RequestBody MultiQuestionEntity multiQuestionEntity) throws RRException {
         if (multiQuestionEntity.getQuestion()!=null &&
                 multiQuestionEntity.getAnswera()!= null &&
@@ -97,7 +101,8 @@ public class MultiQuestionController {
      * 修改
      */
     @PostMapping("/update")
-   // @RequiresPermissions("onlineexam:multiquestion:update")
+    @PreAuthorize("hasAuthority('multiQuestion')")
+    // @RequiresPermissions("onlineexam:multiquestion:update")
     public R update(@RequestBody MultiQuestionEntity multiQuestion){
 		multiQuestionService.updateById(multiQuestion);
 
@@ -108,7 +113,8 @@ public class MultiQuestionController {
      * 删除
      */
     @DeleteMapping("/delete")
-   // @RequiresPermissions("onlineexam:multiquestion:delete")
+    @PreAuthorize("hasAuthority('multiQuestion')")
+    // @RequiresPermissions("onlineexam:multiquestion:delete")
     public R delete(@RequestBody Integer[] questionids){
 		multiQuestionService.removeByIds(Arrays.asList(questionids));
 

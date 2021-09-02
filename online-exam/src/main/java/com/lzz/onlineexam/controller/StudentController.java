@@ -19,6 +19,7 @@ import io.swagger.annotations.ApiOperation;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -60,6 +61,7 @@ public class StudentController {
      */
     @GetMapping("/list/{page}/{size}")
     // @RequiresPermissions("onlineexam:exammanage:list")
+    @PreAuthorize("hasAnyAuthority('admin,teacher')")
     public R list(@PathVariable Integer page, @PathVariable Integer size ) {
 
         return R.ok().put("list", studentService.studentsInfo(page,size));
@@ -67,22 +69,14 @@ public class StudentController {
     }
 
 
-    //获取个人信息 （需在登陆后）
-    @GetMapping("/info/{studentid}")
-    // @RequiresPermissions("onlineexam:student:info")
-    public R info(@PathVariable("studentid") Long studentid) {
-        StudentEntity student=studentService.getById(studentid);
-        if (student == null){
-            return R.error().put("msg" , "身份异常 请重新登录");
-        }
-        return R.ok().put("student", student);
-    }
+
 
     /**
      * 保存
      */
     @PostMapping("/save")
     //  @RequiresPermissions("onlineexam:student:save")
+    @PreAuthorize("hasAnyAuthority('admin,teacher')")
     public R save(@RequestBody StudentEntity student) {
         studentService.save(student);
 
@@ -94,6 +88,7 @@ public class StudentController {
      */
     @PostMapping("/update")
     // @RequiresPermissions("onlineexam:student:update")
+    @PreAuthorize("hasAuthority('teacher')")
     public R update(@RequestBody StudentEntity student) {
         studentService.updateById(student);
 
@@ -105,6 +100,7 @@ public class StudentController {
      */
     @DeleteMapping("/delete")
     // @RequiresPermissions("onlineexam:student:delete")
+    @PreAuthorize("hasAnyAuthority('admin,teacher')")
     public R delete(@RequestBody Integer[] studentids) {
         studentService.removeByIds(Arrays.asList(studentids));
 
@@ -136,32 +132,38 @@ public class StudentController {
 
     }
 
-
+    //获取个人信息 （需在登陆后）
     @PostMapping("/studentinfo")
     @ApiOperation("获取学生个人信息")
-    public R admininfo(HttpServletRequest request , @RequestBody StudentEntity studentEntity, @ApiIgnore HttpSession session){
+    @PreAuthorize("hasAuthority('student')")
+    public R myinfo(HttpServletRequest request , @RequestBody StudentEntity studentEntity, @ApiIgnore HttpSession session){
         String studentName = studentEntity.getStudentname();
         String token = (String) session.getAttribute("token");
-        String studentInfo=studentService.studentInfo(token, studentName);
+        String studentInfo=studentService.myInfo(token, studentName);
         if (studentInfo !=null){
-            return R.ok().put("teacherEntity" , studentInfo);
+            return R.ok().put("studentEntity" , studentInfo);
         }
         return R.error().put("msg","用户身份失效，请重新登录");
     }
 
-    @GetMapping("/studentexamrecord/{studentid}/{page}/{size}")
-    @ApiOperation("学生考试查询")
-    public R myExamRecord(@PathVariable String studentid , @PathVariable Integer page , @PathVariable Integer size){
-        Page<ScoreEntity> scoreEntityPage=studentService.myExamRecord(studentid, page, size);
-        if (scoreEntityPage == null){
-            return R.error().put("msg" , "暂无考试记录");
+    /*
+    * 查看学生信息（教师）
+    * */
+    @GetMapping("/info/{studentid}")
+    // @RequiresPermissions("onlineexam:student:info")
+    @PreAuthorize("hasAnyAuthority('admin,teacher')")
+    public R info(@PathVariable("studentid") Long studentid) {
+        StudentEntity student=studentService.getById(studentid);
+        if (student == null){
+            return R.error().put("msg" , "无此学生");
         }
-        return R.ok().put("scores" , scoreEntityPage);
+        return R.ok().put("student", student);
     }
 
-    @PostMapping("questioncorrected")
+    @PostMapping("/questioncorrected")
     @ApiOperation("学生查看已批改试卷")
     @ApiImplicitParams({@ApiImplicitParam(name="studentid" , value="学生id（非账号）") , @ApiImplicitParam(name="paperid" , value="试卷id")})
+    @PreAuthorize("hasAuthority('student')")
     public R questionsCorrected(@ApiIgnore @RequestBody StudentAnswerEntity studentAnswerEntity){
         Double studentId = studentAnswerEntity.getStudentid();
         Double paperId = studentAnswerEntity.getPaperid();

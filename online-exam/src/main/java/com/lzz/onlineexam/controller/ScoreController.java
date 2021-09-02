@@ -7,7 +7,9 @@ import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lzz.onlineexam.common.exception.RRException;
+import com.lzz.onlineexam.service.StudentService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.elasticsearch.action.bulk.BulkRequest;
@@ -17,6 +19,7 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.lzz.onlineexam.entity.ScoreEntity;
@@ -41,12 +44,16 @@ public class ScoreController {
     private ScoreService scoreService;
 
     @Autowired
+    private StudentService studentService;
+
+    @Autowired
     private RestHighLevelClient restHighLevelClient;
 
     /**
      * 列表
      */
     @GetMapping("/list/{page}/{size}")
+    @PreAuthorize("hasAuthority('score')")
     public R list(@PathVariable Integer page, @PathVariable Integer size ) {
 
         return R.ok().put("list", scoreService.scoresInfo(page,size));
@@ -59,6 +66,7 @@ public class ScoreController {
 
     @GetMapping("/info/{examcode}/{page}/{size}")
     @ApiOperation("根据考试id查询")
+    @PreAuthorize("hasAuthority('score')")
     public R infoByExamCode(@PathVariable("examcode") Double examCode , @PathVariable Integer page ,@PathVariable Integer size){
         IPage<ScoreEntity> iPage=scoreService.infoByExamCode(examCode, page, size);
         if (iPage == null){
@@ -71,6 +79,7 @@ public class ScoreController {
      * 保存
      */
     @PostMapping("/save")
+    @PreAuthorize("hasAuthority('score')")
     public R save(@RequestBody ScoreEntity score) throws RRException {
         if (score.getExamcode()!= null
             && score.getScore()!= null
@@ -87,7 +96,8 @@ public class ScoreController {
      * 修改
      */
     @PostMapping("/update")
-   // @RequiresPermissions("onlineexam:score:update")
+    @PreAuthorize("hasAuthority('score')")
+    // @RequiresPermissions("onlineexam:score:update")
     public R update(@RequestBody ScoreEntity score){
 		scoreService.updateById(score);
 
@@ -98,7 +108,8 @@ public class ScoreController {
      * 删除
      */
     @DeleteMapping("/delete")
-   // @RequiresPermissions("onlineexam:score:delete")
+    @PreAuthorize("hasAuthority('score')")
+    // @RequiresPermissions("onlineexam:score:delete")
     public R delete(@RequestBody Integer[] scoreids){
 		scoreService.removeByIds(Arrays.asList(scoreids));
 
@@ -106,6 +117,15 @@ public class ScoreController {
     }
 
 
-
+    @GetMapping("/studentexamrecord/{studentid}/{page}/{size}")
+    @ApiOperation("学生考试查询")
+    @PreAuthorize("hasAuthority('student')")
+    public R myExamRecord(@PathVariable String studentid , @PathVariable Integer page , @PathVariable Integer size){
+        Page<ScoreEntity> scoreEntityPage=studentService.myExamRecord(studentid, page, size);
+        if (scoreEntityPage == null){
+            return R.error().put("msg" , "暂无考试记录");
+        }
+        return R.ok().put("scores" , scoreEntityPage);
+    }
 
 }

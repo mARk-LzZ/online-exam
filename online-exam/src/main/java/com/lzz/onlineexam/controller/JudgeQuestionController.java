@@ -51,6 +51,7 @@ public class JudgeQuestionController {
      */
     @GetMapping("/list/{page}/{size}")
     // @RequiresPermissions("onlineexam:exammanage:list")
+    @PreAuthorize("hasAnyAuthority('judgeQuestion,student')")
     public R list(@PathVariable Integer page, @PathVariable Integer size ) {
 
         return R.ok().put("list", judgeQuestionService.judgeQuestionsInfo(page,size));
@@ -63,6 +64,7 @@ public class JudgeQuestionController {
      */
     @GetMapping("/info/{questionid}")
    // @RequiresPermissions("onlineexam:judgequestion:info")
+    @PreAuthorize("hasAnyAuthority('judgeQuestion,student')")
     public R info(@PathVariable("questionid") Integer questionid){
 		JudgeQuestionEntity judgeQuestion = judgeQuestionService.getById(questionid);
 
@@ -74,6 +76,7 @@ public class JudgeQuestionController {
      */
     @PostMapping("/save")
     //  @RequiresPermissions("onlineexam:fillquestion:save")
+    @PreAuthorize("hasAuthority('judgeQuestion')")
     public R save(@RequestBody JudgeQuestionEntity judgeQuestionEntity) throws RRException {
         if (judgeQuestionEntity.getQuestion()!=null &&
                 judgeQuestionEntity.getAnswer()!= null &&
@@ -96,6 +99,7 @@ public class JudgeQuestionController {
      */
     @PutMapping("/update")
    // @RequiresPermissions("onlineexam:judgequestion:update")
+    @PreAuthorize("hasAuthority('judgeQuestion')")
     public R update(@RequestBody JudgeQuestionEntity judgeQuestion){
 		judgeQuestionService.updateById(judgeQuestion);
 
@@ -107,6 +111,7 @@ public class JudgeQuestionController {
      */
     @DeleteMapping("/delete")
    // @RequiresPermissions("onlineexam:judgequestion:delete")
+    @PreAuthorize("hasAuthority('judgeQuestion')")
     public R delete(@RequestBody Integer[] questionids){
 		judgeQuestionService.removeByIds(Arrays.asList(questionids));
 

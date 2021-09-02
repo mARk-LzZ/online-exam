@@ -20,13 +20,16 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.lzz.onlineexam.entity.TeacherEntity;
 import com.lzz.onlineexam.service.TeacherService;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 
 /**
@@ -51,6 +54,7 @@ public class TeacherController {
      * 列表 并将数据同步到es中
      */
     @GetMapping("/list/{page}/{size}")
+    @PreAuthorize("hasAuthority('admin')")
     // @RequiresPermissions("onlineexam:exammanage:list")
     public R list(@PathVariable Integer page, @PathVariable Integer size ) {
 
@@ -64,6 +68,7 @@ public class TeacherController {
      */
     @GetMapping("/info/{teacherid}")
    // @RequiresPermissions("onlineexam:teacher:info")
+    @PreAuthorize("hasAuthority('admin')")
     public R info(@PathVariable("teacherid") Integer teacherid){
 		TeacherEntity teacher = teacherService.getById(teacherid);
         return R.ok().put("teacher", teacher);
@@ -74,6 +79,7 @@ public class TeacherController {
      */
     @PostMapping("/save")
   //  @RequiresPermissions("onlineexam:teacher:save")
+    @PreAuthorize("hasAuthority('admin')")
     public R save(@RequestBody TeacherEntity teacher){
 		teacherService.save(teacher);
 
@@ -85,6 +91,7 @@ public class TeacherController {
      */
     @PostMapping("/update")
    // @RequiresPermissions("onlineexam:teacher:update")
+    @PreAuthorize("hasAuthority('teacher')")
     public R update(@RequestBody TeacherEntity teacher){
 		teacherService.updateById(teacher);
 
@@ -96,6 +103,7 @@ public class TeacherController {
      */
     @PostMapping("/delete")
    // @RequiresPermissions("onlineexam:teacher:delete")
+    @PreAuthorize("hasAuthority('admin')")
     public R delete(@RequestBody Integer[] teacherids){
 		teacherService.removeByIds(Arrays.asList(teacherids));
 
@@ -125,7 +133,8 @@ public class TeacherController {
     }
 
     @GetMapping("/teacherinfo/{teacherName}")
-    @ApiOperation("获取教师个人信息")
+    @ApiOperation("获取教师个人信息(管理员)")
+    @PreAuthorize("hasAuthority('admin')")
     public R teacherInfo(HttpServletRequest request ,@PathVariable String teacherName){
         String token = CookieUtils.getCookieValue(request,Constant.COOKIE_LOGIN_KEY);
         if (teacherService.teacherInfo(token , teacherName)!=null){
@@ -134,8 +143,24 @@ public class TeacherController {
         return R.error().put("msg","用户身份失效，请重新登录");
     }
 
+    //获取个人信息 （需在登陆后）
+    @PostMapping("/studentinfo")
+    @ApiOperation("获取教师个人信息")
+    @PreAuthorize("hasAuthority('student')")
+    public R myinfo(HttpServletRequest request , @RequestBody TeacherEntity teacherEntity, @ApiIgnore HttpSession session){
+        String teacherName = teacherEntity.getTeachername();
+        String token = (String) session.getAttribute("token");
+        String teacherInfo=teacherService.myInfo(token, teacherName);
+        if (teacherInfo !=null){
+            return R.ok().put("teacherEntity" , teacherInfo);
+        }
+        return R.error().put("msg","用户身份失效，请重新登录");
+    }
+
+
     @GetMapping("/studentsinfo/{page}/{size}")
     @ApiOperation("查看所有学生")
+    @PreAuthorize("hasAuthority('teacher')")
     public R studentsInfo(@PathVariable Integer page , @PathVariable Integer size){
        return R.ok().put("students", teacherService.studentsInfo(page , size));
     }
